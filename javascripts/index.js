@@ -1,7 +1,6 @@
 var memoryColor = []; //String array
 var pickColor = []; //String array
-var level = 1;
-var i = 0;
+var level = 0;
 var started = false;
 
 $("body").keypress(function (e) {
@@ -15,16 +14,9 @@ $("body").keypress(function (e) {
 $(".btn").click(function (e) {
     makeSound(this.id);
     buttonAnimate(this.id);
-    pickColorProgress(this.id);
-    if(checkColor(pickColor.length-1) === true)
-    {
-        i++;
-        level++;
-        pickColor = [];
-        setTimeout(function(){
-            randomColorProgress();
-        }, 1000);
-    }
+    pickColor.push(this.id);
+
+    checkColor(pickColor.length-1);
 });
 
 //Make Sound
@@ -47,6 +39,8 @@ function buttonAnimate(buttonID) {
 
 function randomColorProgress()
 {
+    pickColor = [];
+    level++;
     $("h1").text("Level " + level);
     var randomColor = Math.random() * 4;
     randomColor = Math.floor(randomColor);
@@ -56,10 +50,6 @@ function randomColorProgress()
     memoryColor.push(colorID);
 }
 
-function pickColorProgress(color)
-{
-    pickColor.push(color);
-}
 
 function checkColor(length) {
 
@@ -67,11 +57,25 @@ function checkColor(length) {
     {
         if(memoryColor.length === pickColor.length)
         {
-            return true;
+            setTimeout(function(){
+                randomColorProgress();
+            }, 1000);
         }
-        else
-            return false;
     }
-    return false;
+    else
+    {
+        $("h1").text("Wrong. Game Over, press any key to restart.");
+        makeSound("wrong");
+        $("body").addClass("game-over");
+        setTimeout(function()
+        {
+            $("body").removeClass("game-over");
+        }, 200)
 
+
+        started = false;
+        level = 0;
+        memoryColor = [];
+    }
 }
+
